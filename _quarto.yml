@@ -37,6 +37,8 @@ book:
       - ica/ica-bi.qmd
       - ica/ica-multi.qmd
       - ica/ica-spatial.qmd
+      - ica/quarto-demo.qmd
+      - ica/ica-univariate.qmd
 
 format:
   html:
