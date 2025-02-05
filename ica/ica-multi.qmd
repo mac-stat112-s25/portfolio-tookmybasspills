@@ -253,14 +253,14 @@ Work on the examples below in your groups. Check in with your intuition! We'll t
 ```{r}
 # Plot temp3pm vs temp9am
 # Change the code in order to indicate the location to which each data point corresponds
-ggplot(weather, aes(y = temp3pm, x = temp9am)) + 
-  geom_point()
+ggplot(weather, aes(y = temp3pm, x = temp9am, color = location)) + 
+  geom_point() 
 ```
 
 ```{r}
 # Change the code in order to indicate the location to which each data point corresponds
 # AND identify the days on which it rained / didn't raintoday
-ggplot(weather, aes(y = temp3pm, x = temp9am)) + 
+ggplot(weather, aes(y = temp3pm, x = temp9am, color = location)) + 
   geom_point()
 ```
 
@@ -274,7 +274,7 @@ ggplot(weather, aes(y = temp3pm, x = temp9am)) +
 
 ```{r}
 # Change the code in order to construct a line plot of temp3pm vs date for each separate location (no points!)
-ggplot(weather, aes(y = temp3pm, x = date)) + 
+ggplot(weather, aes(y = temp3pm, x = date, color = location)) + 
   geom_line()
 ```
 
@@ -285,7 +285,8 @@ ggplot(weather, aes(y = temp3pm, x = date)) +
 # Plot the relationship of raintomorrow & raintoday
 # Change the code in order to indicate this relationship by location
 ggplot(weather, aes(x = raintoday, fill = raintomorrow)) + 
-  geom_bar(position = "fill")
+  geom_bar(position = "fill") +
+  facet_wrap(~ location)
 ```
 
 
@@ -339,12 +340,14 @@ A codebook is provided by Danny Kaplan who also made these data accessible:
 Construct a plot of how the average `sat` scores vary from state to state. (Just use 1 variable -- `sat` not `State`!)
 
 ```{r}
+ggplot(education, aes(x = sat)) +
+  geom_density()
 ```
 
 #### Part b {-}
 
 Summarize your observations from the plot. Comment on the basics: range, typical outcomes, shape. (Any theories about what might explain this non-normal shape?)
-
+The most typical outcomes are around the 900 and 1025 range, but I don't know why its like this 
 
 
 ### Exercise 2: SAT Scores vs Per Pupil Spending & SAT Scores vs Salaries {-}
@@ -356,12 +359,18 @@ The first question we'd like to answer is: Can the variability in `sat` scores f
 ```{r}
 # Construct a plot of sat vs expend
 # Include a "best fit linear regression model" (HINT: method = "lm")
+ggplot(education, aes(x = expend, y = sat)) +
+  geom_point() +
+  geom_smooth(method = "lm")
 
 ```
 
 ```{r}
 # Construct a plot of sat vs salary
 # Include a "best fit linear regression model" (HINT: method = "lm")
+ggplot(education, aes(x = salary, y = sat)) +
+  geom_point() +
+  geom_smooth(method = "lm")
 
 ```
 
@@ -369,12 +378,17 @@ The first question we'd like to answer is: Can the variability in `sat` scores f
 
 What are the relationship trends between SAT scores and spending? Is there anything that surprises you?
 
+Both spending and teacher salaries have a negative relationship, where the more money is spent the worse kids end up doing. I would have thought the relationship was positive
+
 
 ### Exercise 3: SAT Scores vs Per Pupil Spending *and* Teacher Salaries {-}
 
 Construct *one* visualization of the relationship of `sat` with `salary` *and* `expend`. HINT: Start with just 2 variables and tweak that code to add the third variable. Try out a few things!
 
 ```{r}
+ggplot(education, aes(x = salary, y = sat, color = expend)) +
+  geom_point() +
+  geom_smooth(method = "lm")
 ```
 
 
@@ -393,6 +407,7 @@ ggplot(education, aes(y = sat, x = salary, color = cut(expend, 2))) +
 
 Describe the trivariate relationship between `sat`, `salary`, and `expend`.
 
+The less money is spend on both salary and school budget, the higher sat scores chart
 
 ### Exercise 5: Finally an Explanation {-}
 
@@ -403,6 +418,8 @@ It's strange that SAT scores *seem* to decrease with spending. But we're leaving
 Build a univariate viz of `fracCat` to better understand how many states fall into each category.
 
 ```{r}
+ggplot(education, aes(x = sat, fill = fracCat)) +
+  geom_histogram()
 ```
 
 #### Part b {-}
@@ -410,7 +427,12 @@ Build a univariate viz of `fracCat` to better understand how many states fall in
 Build 2 bivariate visualizations that demonstrate the relationship between `sat` and `fracCat`. What story does your graphic tell and why does this make contextual sense?
 
 ```{r}
+ggplot(education, aes(x = sat, y = fracCat, fill = fracCat)) +
+  geom_boxplot()
+ggplot(education, aes(x = sat, y = fracCat, fill = fracCat)) +
+  geom_violin()
 ```
+These graphics show that schools with less students taking the SAT tend to have higher averages (likely because the average is built on less data)
 
 #### Part c {-}
 
@@ -418,12 +440,16 @@ Make a trivariate visualization that demonstrates the relationship of `sat` with
 Does it still seem that SAT scores decrease as spending increases?
 
 ```{r}
+ggplot(education, aes(x = expend, y = sat, color = fracCat)) +
+  geom_point() +
+  geom_smooth(se = FALSE, method = "lm")
 ```
-
+these graphics show that while having less students increases the average sat score per school, spending more on schools will still result in higher averages within these groups.
 #### Part d {-}
 
 Putting all of this together, explain this example of **Simpson’s Paradox**. That is, why did it appear that SAT scores decrease as spending increases even though the *opposite* is true?
 
+Because we only relied on two variables, and didn't use all given to us. 
 
 ## Exercises (optional)
 
