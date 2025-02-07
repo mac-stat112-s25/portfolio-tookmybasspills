@@ -337,6 +337,12 @@ starbucks_mn <- starbucks |>
 
 Create a leaflet map of the Starbucks locations in Minnesota.
 Keep it simple -- go back to Exercise 1 for an example.
+```{r}
+leaflet(data = starbucks_mn) |> 
+  addTiles() |> 
+  addMarkers()
+```
+
 
 ### Part 2: Static points on a map {-}
 
@@ -360,6 +366,8 @@ It's pretty cool that the plots we already know can provide some spatial context
 But what *don't* you like about this plot?
 
 ```{r}
+ggplot(starbucks, aes(x = Latitude, y = Longitude)) +
+  geom_point()
 ```
 
 ### Exercise 4: Adding a country-level background {.unnumbered}
@@ -413,6 +421,7 @@ ggplot(world_boundaries) +
 #### Part c {.unnumbered}
 
 Summarize what you learned about Starbucks from this map.
+**Starbucks is primarily located in North America, Western Europe, and East Asia, with locations being peppered in South America and Southeast Asia.**
 
 ### Exercise 5: Zooming in on some countries {.unnumbered}
 
@@ -508,16 +517,16 @@ Adjust the code below to make the plot!
 Remove the `#` to run it.
 
 ```{r}
-# ggplot(___) + 
-#   geom___() + 
-#   geom___(
-#     data = ___,
-#     aes(x = ___, y = ___),
-#     alpha = 0.7,
-#     size = 0.2, 
-#     color = 'darkgreen'
-#   ) + 
-#   theme_map()
+ ggplot(midwest_boundaries) + 
+   geom_sf() + 
+   geom_point(
+     data = starbucks_midwest,
+     aes(x = Longitude, y = Latitude),
+     alpha = 0.7,
+     size = 0.5, 
+     color = 'darkgreen'
+   ) + 
+   theme_map()
 ```
 
 ### Exercise 7: Contour maps {.unnumbered}
@@ -710,6 +719,7 @@ ggplot(elections_by_state, aes(map_id = state_name, fill = repub_20_categories))
 
 We used `geom_sf()` for point maps.
 What `geom` do we use for choropleth maps?
+"geom_map()"
 
 ### Exercise 9: County-level choropleth maps {.unnumbered}
 
