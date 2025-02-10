@@ -364,6 +364,7 @@ Construct a scatterplot of all `starbucks` locations, not just those in Minnesot
 
 It's pretty cool that the plots we already know can provide some spatial context.
 But what *don't* you like about this plot?
+**does not put information into easily understood context**
 
 ```{r}
 ggplot(starbucks, aes(x = Latitude, y = Longitude)) +
@@ -685,6 +686,7 @@ ggplot(elections_by_state, aes(map_id = state_name, fill = repub_20_categories))
 We can add other layers, like points, on top of a choropleth map.
 Add a Starbucks layer!
 Do you notice any relationship between Starbucks and elections?
+**starbucks tend to be in democrat areas**
 Or are we just doing things at this point?
 ;)
 
@@ -782,6 +784,19 @@ ggplot(elections_by_counties, aes(map_id = county_fips, fill = repub_20_categori
 ### Exercise 10: Play around! {.unnumbered}
 
 Construct county-level maps of `median_rent` and `median_age`.
+```{r}
+library(RColorBrewer)
+
+ggplot(elections_by_counties, aes(map_id = county_fips, fill = median_rent)) +
+  geom_map(map = county_map) +
+  expand_limits(x = county_map$long, y = county_map$lat) +
+  theme_map() 
+
+ggplot(elections_by_counties, aes(map_id = county_fips, fill = median_age)) +
+  geom_map(map = county_map) +
+  expand_limits(x = county_map$long, y = county_map$lat) +
+  theme_map() 
+```
 
 ### Exercise 11: Choropleth maps with leaflet {.unnumbered}
 
