@@ -40,6 +40,7 @@ book:
       - ica/quarto-demo.qmd
       - ica/ica-univariate.qmd
       - ica/ica-bivariate.qmd
+      - ica/ica-effective.qmd
 
 format:
   html:
