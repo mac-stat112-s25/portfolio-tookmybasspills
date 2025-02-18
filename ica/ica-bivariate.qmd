@@ -370,8 +370,7 @@ To examine how the 2020 results are related to some county demographics, constru
 # Scatterplot of repub_pct_20 vs median_rent
 ggplot(elections, aes(x = repub_pct_20, y = median_rent)) + 
   geom_point() +
-  geom_smooth(method = "lm")
-
+  geom_smooth(method = "lm") 
 
 # Scatterplot of repub_pct_20 vs median_age
 
