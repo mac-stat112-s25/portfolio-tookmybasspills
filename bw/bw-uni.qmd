@@ -3,3 +3,15 @@ title: "Univariate Viz"
 ---
 
 Use this file to generate a professional looking **univariate** visualization. The visualization will not perfect the first time but you are expected to improve on it throughout the semester especially after covering advanced topics such as effective viz.
+
+```{r}
+# Option 2: Read directly from GitHub
+exped_tidy <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-01-21/exped_tidy.csv')
+peaks_tidy <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-01-21/peaks_tidy.csv')
+
+#|fig-cap: "A bar graph measuring the amount of Himalayan mountain expeditions per season"
+#|gif-alt: "A bar graph measuring number of himalayan mountain expeditinos per season. Spring followed by Autumn are the most popular seasons, with Winter and Summer following hundreds of expeditions behind. https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-01-21/readme.md"
+ggplot(exped_tidy, aes(x = SEASON_FACTOR)) +
+  geom_bar() +
+  labs(x = "Season", y = "Number of Expeditions") 
+```

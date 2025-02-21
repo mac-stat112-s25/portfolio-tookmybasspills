@@ -41,11 +41,12 @@ states_map <- map_data("state")
 starbucks_contiguous_us <- starbucks |>
   filter(Country == "US", State.Province != "AK", State.Province != "HI")
 
-#|fig-cap:"created by Elina"
+#|fig-cap: "created by Elina, 2/2025, data: https://mac-stat.github.io/data/us_census_2018_state_pop_est.csv"
+#|fig-alt: "A map of the amount of each US State's amount of starbucks per 10,000 people, accompanied by plots of each starbucks location. Although there are more starbucks on the east coast, the west coast tends to have more starbucks per person."
 ggplot(starbucks_with_2018_pop_est, aes(map_id = state_name, fill = starbucks_per_10000)) +
   geom_map(map = states_map) +
   expand_limits(x = states_map$long, y = states_map$lat) +
-  scale_fill_gradientn(name = "Starbucks per 10000 people", colors = c("#a1eda6", "#2c422e"), values = scales::rescale((seq(0, 100, by = 5)))) +
+  scale_fill_viridis_c() +
   theme_map() +
   geom_point(
     data = starbucks_contiguous_us,

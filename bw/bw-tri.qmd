@@ -3,3 +3,22 @@ title: "Trivariate Viz"
 ---
 
 Use this file to generate a professional looking **trivariate** visualization.  The visualization will not perfect the first time but you are expected to improve on it throughout the semester especially after covering advanced topics such as effective viz.
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(mosaic)
+library(fivethirtyeight)
+
+data(bechdel)
+new_bechdel <- bechdel |>
+  mutate(Result = factor(clean_test, c("nowomen", "notalk", "men", "dubious", "ok"))) |>
+  mutate(half_decades = cut(year, breaks = seq(1969, 2014, by = 5)))
+
+#|fig-cap: "Made by Elina Poll, 2/2025, source: https://fivethirtyeight.com/features/the-dollar-and-cents-case-against-hollywoods-exclusion-of-women/"
+#|fig-alt: "A bar graph of Bechdel Test results for movies released every half-decade. More movies are passing the test with each half-decade, but only faliures due to women not talking to each other have substantially decreased"
+ggplot(new_bechdel, aes(x = half_decades, fill = Result)) +
+  geom_bar(position = "fill") + 
+  scale_fill_viridis_d() +
+  labs(y = "% of surveyed movies", x = "Half Decades")
+```

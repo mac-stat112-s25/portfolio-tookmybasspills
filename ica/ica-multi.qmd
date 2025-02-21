@@ -440,6 +440,7 @@ Make a trivariate visualization that demonstrates the relationship of `sat` with
 Does it still seem that SAT scores decrease as spending increases?
 
 ```{r}
+education <- read.csv("https://mac-stat.github.io/data/sat.csv")
 ggplot(education, aes(x = expend, y = sat, color = fracCat)) +
   geom_point() +
   geom_smooth(se = FALSE, method = "lm")

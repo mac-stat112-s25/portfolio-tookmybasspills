@@ -3,3 +3,16 @@ title: "Quadvariate Viz"
 ---
 
 Use this file to generate a professional looking **quadvariate** visualization.  The visualization will not perfect the first time but you are expected to improve on it throughout the semester especially after covering advanced topics such as effective viz.
+
+```{r}
+library(ggplot2)
+#|fig-cap: "Made by Elina Poll, 2/2025, source: https://mac-stat.github.io/data/sat.csv"
+#|fig-alt: "A scatterplot of Per-pupil funding and SAT average, seperated by the percentile of students taking it. When seperated, there becomes a positive correlation for each group with more spending increasing sat score."
+education <- read.csv("https://mac-stat.github.io/data/sat.csv")
+ggplot(education, aes(x = expend, y = sat, color = fracCat)) +
+  geom_point() +
+  geom_smooth(se = FALSE, method = "lm") +
+  scale_color_viridis_d() +
+  labs(x = "Expenditure per pupil", y = "Average SAT score", title = "SAT Scores vs Per Pupil Spending", color = "# of students taking SAT")  
+
+```

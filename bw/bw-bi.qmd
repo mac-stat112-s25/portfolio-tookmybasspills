@@ -8,13 +8,12 @@ Use this file to generate a professional looking **bivariate** visualization.  T
 # Load data
 elections <- read.csv("https://mac-stat.github.io/data/election_2020_county.csv")
 
-# Check it out
-head(elections)
-
+#|fig-cap: "Made by Elina Poll, 2/2025, source: https://mac-stat.github.io/data/election_2020_county.csv"
+#|fig-alt: "A scatterplot of the amount of Republican county support and average rent. The lower the median rent is, the more support counties have."
 ggplot(elections, aes(x = repub_pct_20, y = median_rent)) + 
   geom_point() +
   geom_smooth(method = "lm") +
-  labs(y = "Median Rent", x = "Republican Support (by county)")
+  labs(y = "Median Rent", x = "Republican Support (by county)", title = "Median Rent's impact on Republican county support")
 ```
 
  
