@@ -5,6 +5,7 @@ title: "Bivariate Viz"
 Use this file to generate a professional looking **bivariate** visualization.  The visualization will not perfect the first time but you are expected to improve it throughout the semester especially after covering advanced topics such as effective viz.
 
 ```{r}
+library(ggplot2)
 # Load data
 elections <- read.csv("https://mac-stat.github.io/data/election_2020_county.csv")
 
