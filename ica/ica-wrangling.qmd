@@ -277,8 +277,9 @@ Use `select()` to create a simplified dataset that we'll use throughout the exer
 
 ```{r}
 # Define elections_small
-#___ <- ___ |>
-#  ___(___)
+elections_small <- elections |>
+  select(state_name, county_name,total_votes_20, repub_pct_20, dem_pct_20, total_votes_16, dem_pct_16)
+head(elections_small)
 
 # Check out the first 6 rows to confirm your code did what you think it did!
 
@@ -318,26 +319,29 @@ To comment/uncomment several lines of code at once, highlight them then click <k
 
 ```{r}
 # Keep only data on counties in Hawaii
-# elections_small |>
-#  filter(___ ___ ___)
+elections_small |>
+  filter(state_name == "Hawaii")
 ```
 
 ```{r}
-# What does this do?
-# elections_small |> 
-#   filter(state_name %in% c("Hawaii", "Delaware"))
+#What does this do?
+elections_small |>
+  filter(state_name %in% c("Hawaii", "Delaware"))
+ "filters results to only Hawaii and Delaware's county results"
 ```
 
 ```{r}
 # Keep only data on counties where the Republican got MORE THAN 93.97% of the vote in 2020
-# THINK: What variable is relevant here?
+elections_small |>
+  filter(repub_pct_20 > 93.97)
 
 ```
 
 ```{r}
 # Keep only data on counties where the Republican got AT LEAST 93.97% of the vote in 2020
 # This should have 1 more row (observation) than your answer above
-
+elections_small |>
+  filter(repub_pct_20 >= 93.97)
 ```
 
 We can also filter with respect to 2 rules! Here, think what variables are relevant.
@@ -346,13 +350,13 @@ We can also filter with respect to 2 rules! Here, think what variables are relev
 # Keep only data on counties in Texas where the Democrat got more than 65% of the vote in 2020
 # Do this 2 ways.
 # Method 1: 2 filters with 1 condition each
-#elections_small |> 
-#  filter(___) |> 
-#  filter(___)
+elections_small |>
+ filter(state_name == "Texas") |>
+ filter(dem_pct_20 > 65)
 
 # Method 2: 1 filter with 2 conditions
-#elections_small |> 
-#  filter(___, ___)
+elections_small |>
+ filter(state_name =="Texas", dem_pct_20 > 65)
 ```
 
 
@@ -367,14 +371,17 @@ We can also filter with respect to 2 rules! Here, think what variables are relev
 ```{r}
 # Arrange the counties in elections_small from lowest to highest percentage of 2020 Republican support
 # Print out just the first 6 rows
-# elections_small |> 
-#   arrange(___) |> 
-#   head()
+elections_small |>
+  arrange(repub_pct_20) |>
+  head()
 ```
 
 ```{r}
 # Arrange the counties in elections_small from highest to lowest percentage of 2020 Republican support
 # Print out just the first 6 rows
+elections_small |>
+  arrange(desc(repub_pct_20)) |>
+  head()
 ```
 
 
@@ -388,23 +395,26 @@ We can also filter with respect to 2 rules! Here, think what variables are relev
 
 ```{r}
 # What did this code do?
-# elections_small |> 
-#   mutate(diff_20 = repub_pct_20 - dem_pct_20) |> 
-#   head()
+elections_small |>
+  mutate(diff_20 = repub_pct_20 - dem_pct_20) |>
+  head()
+#Creates a new variable measuring the difference between the two parties support
 ```
 
 ```{r}
 # What did this code do?
-# elections_small |> 
-#   mutate(repub_votes_20 = round(total_votes_20 * repub_pct_20/100)) |> 
-#   head()
+elections_small |>
+  mutate(repub_votes_20 = round(total_votes_20 * repub_pct_20/100)) |>
+  head()
+#creates a variable measuring the amount of republican votes taken from the total votes
 ```
 
 ```{r}
 # What did this code do?
-# elections_small |> 
-#   mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |> 
-#   head()
+elections_small |>
+  mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |>
+  head()
+#Creates a variable displaying if republicans won or not
 ```
 
 #### Part b {-}
@@ -412,17 +422,17 @@ We can also filter with respect to 2 rules! Here, think what variables are relev
 ```{r}
 # You try
 # Define a variable that calculates the change in Dem support in 2020 vs 2016
-#elections_small |> 
-#  mutate(_____) |> 
-#  head()
+elections_small |>
+ mutate(dem_support_change = dem_pct_20 - dem_pct_16) |>
+ head()
 ```
 
 ```{r}
 # You try
 # Define a variable that determines whether the Dem support was higher in 2020 than in 2016 (TRUE/FALSE)
-#elections_small |> 
-#  mutate(_____) |> 
-#  head()
+elections_small |>
+ mutate(dem_higher_yesno = dem_pct_20 > dem_pct_16) |>
+ head()
 ```
 
 
@@ -436,15 +446,15 @@ Let's now combine these verbs into a pipe series!
 ::: {.callout-important title="Think then Run"}
 
 BEFORE running the below chunk, what do you think it will produce?
-
+A graph of Wisconsin republican counties from 2020, arranged by the highest amount of votes 
 :::
 
 ```{r}
-# elections_small |> 
-#   filter(state_name == "Wisconsin",
-#          repub_pct_20 < dem_pct_20) |> 
-#   arrange(desc(total_votes_20)) |> 
-#   head()
+elections_small |>
+  filter(state_name == "Wisconsin",
+         repub_pct_20 < dem_pct_20) |>
+  arrange(desc(total_votes_20)) |>
+  head()
 ```
 
 #### Part b {-}
@@ -453,38 +463,38 @@ BEFORE running the below chunk, what do you think it will produce?
 
 BEFORE trying, what do you think will happen if you change the order of filter and arrange:
 
--   the results will be the same
--   we'll get an error
 -   we won't get an error, but the results will be different
 
 :::
 
 ```{r}
 # Now try it. Change the order of filter and arrange below.
-# elections_small |> 
-#   filter(state_name == "Wisconsin",
-#          repub_pct_20 < dem_pct_20) |> 
-#   arrange(desc(total_votes_20)) |> 
-#   head()
+elections_small |>  
+  arrange(desc(total_votes_20)) |>
+  filter(state_name == "Wisconsin",
+         repub_pct_20 < dem_pct_20) |>
+  head()
 ```
 
 #### Part c {-}
 
 So the order of `filter()` and `arrange()` did *not* matter -- rerranging them produces the same results. BUT what is one *advantage* of filtering before arranging?
+*keeping them in that order means that any errors from filtering arent hidden by arranging them
 
 #### Part d {-}
 
 ::: {.callout-important title="Think then Run"}
 
 BEFORE running the below chunk, what do you think it will produce?
+Creates a sheet of Delaware republican counties that won in 2020, alongside the amount of support by each party
 
 :::
 
 ```{r}
-# elections_small |> 
-#   filter(state_name == "Delaware") |> 
-#   mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |> 
-#   select(county_name, repub_pct_20, dem_pct_20, repub_win_20)
+elections_small |>
+  filter(state_name == "Delaware") |>
+  mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |>
+  select(county_name, repub_pct_20, dem_pct_20, repub_win_20)
 ```
 
 #### Part e {-}
@@ -494,17 +504,17 @@ BEFORE running the below chunk, what do you think it will produce?
 BEFORE trying, what do you think will happen if you change the order of mutate and select:
 
 1.   the results will be the same
-2.   we'll get an error
-3.   we won't get an error, but the results will be different
+
 
 :::
 
 ```{r}
 # Now try it. Change the order of mutate and select below.
-# elections_small |> 
-#   filter(state_name == "Delaware") |> 
-#   mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |> 
-#   select(county_name, repub_pct_20, dem_pct_20, repub_win_20)
+elections_small |>
+  filter(state_name == "Delaware") |>
+  select(county_name, repub_pct_20, dem_pct_20, repub_win_20)
+  mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |>
+
 ```
 
 
@@ -521,6 +531,10 @@ We've now learned 4 of the 6 wrangling verbs: `select`, `filter`, `mutate`, `arr
 Show just the counties in Minnesota and their Democratic 2020 vote percentage, from highest to lowest. Your answer should have just 2 columns.
 
 ```{r}
+elections_small |>
+  filter(state_name == "Minnesota") |>
+  select(county_name, dem_pct_20) |>
+  arrange(desc(dem_pct_20))
 ```
 
 #### Part b {-}
@@ -530,10 +544,13 @@ Create a new dataset named `mn_wi` that sorts the counties in Minnesota and Wisc
 ```{r}
 # Define the dataset
 # Only store the results once you're confident that they're correct
-
+mn_wi <- elections_small |>
+  filter(state_name %in% c("Minnesota", "Wisconsin")) |>
+  mutate(dem_diff = dem_pct_20 - dem_pct_16) |>
+  select(state_name, county_name, dem_pct_20, dem_pct_16, dem_diff)
 
 # Check out the first 6 rows to confirm your results
-
+head(mn_wi)
 ```
 
 #### Part c {-}
@@ -541,6 +558,9 @@ Create a new dataset named `mn_wi` that sorts the counties in Minnesota and Wisc
 Construct and discuss a plot of the county-level change in Democratic vote percent in 2020 vs 2016, and how this differs between Minnesota and Wisconsin.
 
 ```{r}
+ggplot(mn_wi, aes(x = dem_diff)) +
+  geom_histogram() +
+  facet_wrap(~state_name)
 ```
 
 
@@ -553,20 +573,23 @@ Let's talk about the last 2 verbs. `summarize()` (or equivalently `summarise()`)
 
 ```{r}
 # What does this do?
-# elections_small |> 
-#   summarize(median(repub_pct_20))
+elections_small |>
+  summarize(median(repub_pct_20))
+#gives the median of all levels of republican county support
 ```
 
 ```{r}
 # What does this do?
-# elections_small |> 
-#   summarize(median_repub = median(repub_pct_20))
+elections_small |>
+  summarize(median_repub = median(repub_pct_20))
+#gives that same median but this time from a seperately created variable
 ```
 
 ```{r}
 # What does this do?
-# elections_small |> 
-#   summarize(median_repub = median(repub_pct_20), total_votes = sum(total_votes_20))
+elections_small |>
+  summarize(median_repub = median(repub_pct_20), total_votes = sum(total_votes_20))
+#gives the median republican support like before but this time with another column for the sum of all votes
 ```
 
 
@@ -577,20 +600,20 @@ Let's talk about the last 2 verbs. `summarize()` (or equivalently `summarise()`)
 Finally, `group_by()` groups the units of observation or rows of a data frame by a specified set of variables. Alone, this function doesn't change the appearance of our dataset or seem to do anything at all:
 
 ```{r}
-# elections_small |> 
-#   group_by(state_name)
+elections_small |>
+  group_by(state_name)
 ```
 
 Though it does change the underlying structure of the dataset:
 
 ```{r}
-# Check out the structure before and after group_by
-# elections_small |> 
-#   class()
-# 
-# elections_small |> 
-#   group_by(state_name) |> 
-#   class()
+#Check out the structure before and after group_by
+elections_small |>
+  class()
+
+elections_small |>
+  group_by(state_name) |>
+  class()
 ```
 
 Where it really shines is in partnership with `summarize()`.
@@ -598,9 +621,9 @@ Where it really shines is in partnership with `summarize()`.
 ```{r}
 # What does this do?
 # (What if we didn't use group_by?)
-# elections_small |> 
-#   group_by(state_name) |> 
-#   summarize(median_repub = median(repub_pct_20), total_votes = sum(total_votes_20)) 
+elections_small |>
+  group_by(state_name) |>
+  summarize(median_repub = median(repub_pct_20), total_votes = sum(total_votes_20))
 ```
 
 ::: {.callout-warning title="Reflect"}
@@ -624,17 +647,32 @@ NOTE: Part a is a challenge exercise. If you get really stuck, move on to Part b
 
 ```{r}
 # Sort the *states* from the most to least total votes cast in 2020
-
+elections_small |> 
+  group_by(state_name) |> 
+  summarize(total = sum(total_votes_20)) |> 
+  arrange(desc(total))
 ```
 
 ```{r}
 # In 2020, what were the total number of votes for the Democratic candidate and the total number of votes for the Republican candidate in each *state*?
-
+elections_small |>
+  group_by(state_name) |>
+  mutate(dem_votes_20 = round(total_votes_20 * dem_pct_20 / 100), 
+         repub_votes_20 = round(total_votes_20 * repub_pct_20 / 100)) |> 
+  group_by(state_name) |> 
+  summarize(dem_total = sum(dem_votes_20),
+            repub_total = sum(repub_votes_20))
 ```
 
 ```{r}
 # What states did the Democratic candidate win in 2020?
-
+elections_small |> 
+  mutate(dem_votes_20 = round(total_votes_20 * dem_pct_20 / 100), 
+         repub_votes_20 = round(total_votes_20 * repub_pct_20 / 100)) |> 
+  group_by(state_name) |> 
+  summarize(dem_total = sum(dem_votes_20),
+            repub_total = sum(repub_votes_20)) |> 
+  filter(dem_total > repub_total)
 ```
 
 #### Part b {-}
@@ -642,7 +680,10 @@ NOTE: Part a is a challenge exercise. If you get really stuck, move on to Part b
 ```{r}
 # Sort the states from the most to least total votes cast in 2020
 # HINT: Calculate the total number of votes in each state, then sort
-
+elections_small |>
+  group_by(state_name) |>
+  summarize(total = total_votes_20) |>
+  arrange(desc(total))
 ```
 
 ```{r}
@@ -672,30 +713,38 @@ You can find a codebook [here](https://github.com/rfordatascience/tidytuesday/tr
 
 ```{r}
 # In what years did Brazil win the World Cup?
-
+world_cup |>
+  filter(winner == "Brazil")
 ```
 
 ```{r}
 # What were the 6 World Cups with the highest attendance?
-
+world_cup |>
+  arrange(desc(attendance)) |>
+head()
 ```
 
 ```{r}
 # Construct a univariate plot of goals_scored (no wrangling necessary)
 # This provides a visual summary of how the number of goals_scored varies from World Cup to World Cup
-
+ggplot(world_cup, aes(x = goals_scored)) +
+  geom_histogram(color = "white") 
 ```
 
 ```{r}
 # Let's follow up the plot with some more precise numerical summaries
 # Calculate the min, median, and max number of goals_scored across all World Cups
 # NOTE: Visually compare these numerical summaries to what you observed in the plot
-
+world_cup |>
+  summarize(min(goals_scored), median(goals_scored), max(goals_scored))
 ```
 
 ```{r}
 # Construct a bivariate plot of how the number of goals_scored in the World Cup has changed over the years
 # No wrangling necessary
+ggplot(world_cup, aes(x = year, y = goals_scored)) +
+  geom_point() +
+  geom_line()
 
 ```
 
@@ -703,7 +752,12 @@ You can find a codebook [here](https://github.com/rfordatascience/tidytuesday/tr
 # Our above summaries might be a bit misleading.
 # The number of games played at the World Cup varies.
 # Construct a bivariate plot of how the typical number of goals per game has changed over the years
+per_game_data <- world_cup |> 
+  mutate(goals_per_game = goals_scored / games)
 
+ggplot(per_game_data, aes(x = year, y = goals_per_game)) +
+  geom_point() +
+  geom_line()
 
 ```
 
