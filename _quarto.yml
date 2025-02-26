@@ -41,6 +41,8 @@ book:
       - ica/ica-univariate.qmd
       - ica/ica-bivariate.qmd
       - ica/ica-effective.qmd
+      - ica/ica-wrangling.qmd
+      - ica/ica-dates.qmd
 
 format:
   html:
