@@ -378,16 +378,19 @@ Use the appropriate join for each prompt below. In each case, think before you t
 
 ```{r}
 # 1. We want contact info for people who HAVEN'T voted
-
+contact |>
+  anti_join(voters, join_by(name == id))
 
 # 2. We want contact info for people who HAVE voted
-
+contact |>
+  semi_join(voters, join_by(name == id))
 
 # 3. We want any data available on each person
-
-
+contact |>
+  full_join(voters, join_by(name == id))
 # 4. When possible, we want to add contact info to the voting roster
-
+voters |>
+  full_join(contact, join_by(id == name))
 
 ```
 
@@ -430,10 +433,12 @@ Use R code to take a quick glance at the data.
 
 ```{r}
 # How many observations (rows) and variables (columns) are there in the grades data?
-
+ncol(grades)
+nrow(grades)
 
 # How many observations (rows) and variables (columns) are there in the courses data?
-
+ncol(courses)
+nrow(courses)
 
 ```
 
@@ -463,12 +468,12 @@ courses |>
 For our class size exploration, obtain the *total* enrollments in each `sessionID`, combining any cross-listed sections. Save this as `courses_combined`. NOTE: There's no joining to do here!
 
 ```{r}
-# courses_combined <- courses |> 
-#   ___(sessionID) |> 
-#   ___(enroll = sum(___))
+courses_combined <- courses |>
+  group_by(sessionID) |>
+  summarise(enroll = sum(enroll))
 
 # Check that this has 1695 rows and 2 columns
-# dim(courses_combined)
+dim(courses_combined)
 ```
 
 #### Part b {.unnumbered}
@@ -480,6 +485,8 @@ Let's first examine the question of class size from the *administration*'s viewp
 -   Do you have to do any joining? If so, which dataset will go on the left, i.e. which dataset includes your primary observations of interest? Which join function will you need?
 
 ```{r}
+courses_combined |>
+  summarize(median(enroll))
 ```
 
 #### Part c {.unnumbered}
@@ -491,6 +498,11 @@ But how big are classes from the student perspective? To this end, calculate the
 -   Do you have to do any joining? If so, which dataset will go on the left, i.e. which dataset includes your primary observations of interest? Which join function will you need?
 
 ```{r}
+studentsize <- grades |>
+  left_join(courses_combined) |>
+  group_by(sid) |>
+  summarize(classmed = median(enroll)) 
+head(studentsize)
 ```
 
 #### Part d {.unnumbered}
@@ -498,8 +510,8 @@ But how big are classes from the student perspective? To this end, calculate the
 The median class size varies from student to student. To get a sense for the typical student experience and range in student experiences, construct and discuss a histogram of the median class sizes experienced by the students.
 
 ```{r}
-# ggplot(student_class_size, aes(x = ___)) + 
-#   geom___()
+ggplot(studentsize, aes(x = classmed)) +
+  geom_histogram()
 ```
 
 
@@ -511,6 +523,8 @@ The median class size varies from student to student. To get a sense for the typ
 Show data on the students that enrolled in `session1986`. THINK FIRST: Which of the 2 datasets do you need to answer this question? One? Both?
 
 ```{r}
+grades |>
+  filter(sessionID == "session1986")
 ```
 
 #### Part b {.unnumbered}
@@ -525,6 +539,8 @@ dept_E <- courses |>
 What students enrolled in classes in department E? (We just want info on the students, not the classes.)
 
 ```{r}
+grades |> 
+  semi_join(dept_E)
 ```
 
 
@@ -550,6 +566,10 @@ gpa_conversion
 How many total student enrollments are there in each department? Order from high to low.
 
 ```{r}
+courses |>
+  group_by(dept) |>
+  summarize(total = sum(enroll)) |>
+  arrange(desc(total))
 ```
 
 #### Part b {.unnumbered}
@@ -557,6 +577,11 @@ How many total student enrollments are there in each department? Order from high
 What's the grade-point average (GPA) for each student?
 
 ```{r}
+grades |>
+  left_join(gpa_conversion) |>
+  group_by(sid) |>
+  summarise(gpa = mean(gp, na.rm = TRUE)) |>
+  summarize(median(gpa))
 ```
 
 #### Part c {.unnumbered}
@@ -564,6 +589,11 @@ What's the grade-point average (GPA) for each student?
 What's the median GPA across all students?
 
 ```{r}
+grades |> 
+  left_join(gpa_conversion) |> 
+  group_by(sid) |> 
+  summarize(gpa = mean(gp, na.rm = TRUE)) |> 
+  summarize(median(gpa))
 ```
 
 #### Part d {.unnumbered}
@@ -571,6 +601,10 @@ What's the median GPA across all students?
 What fraction of grades are below B+?
 
 ```{r}
+grades |> 
+  left_join(gpa_conversion) |> 
+  mutate(below_b_plus = (gp < 3.3)) |> 
+  summarize(mean(below_b_plus, na.rm = TRUE))
 ```
 
 #### Part e {.unnumbered}
@@ -578,6 +612,12 @@ What fraction of grades are below B+?
 What's the grade-point average for each instructor? Order from low to high.
 
 ```{r}
+grades |> 
+  left_join(gpa_conversion) |> 
+  left_join(courses) |> 
+  group_by(iid) |> 
+  summarize(gpa = mean(gp, na.rm = TRUE)) |> 
+  arrange(gpa)
 ```
 
 #### Part f {.unnumbered}
