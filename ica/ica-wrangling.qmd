@@ -403,17 +403,17 @@ elections_small |>
 
 ```{r}
 # What did this code do?
-# elections_small |>
-#   mutate(repub_votes_20 = round(total_votes_20 * repub_pct_20/100)) 
-#   head()
+elections_small |>
+  mutate(repub_votes_20 = round(total_votes_20 * repub_pct_20/100)) |>
+  head()
 #creates a variable measuring the amount of republican votes taken from the total votes
 ```
 
 ```{r}
 # What did this code do?
-# elections_small |>
-#   mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |>
-#   head()
+elections_small |>
+  mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |>
+  head()
 #Creates a variable displaying if republicans won or not
 ```
 
@@ -422,17 +422,17 @@ elections_small |>
 ```{r}
 # You try
 # Define a variable that calculates the change in Dem support in 2020 vs 2016
-# elections_small |>
-#  mutate(dem_support_change = dem_pct_20 - dem_pct_16) |>
-#  head()
+elections_small |>
+ mutate(dem_support_change = dem_pct_20 - dem_pct_16) |>
+ head()
 ```
 
 ```{r}
 # You try
 # Define a variable that determines whether the Dem support was higher in 2020 than in 2016 (TRUE/FALSE)
-# elections_small |>
-#  mutate(dem_higher_yesno = dem_pct_20 > dem_pct_16) |>
-#  head()
+elections_small |>
+ mutate(dem_higher_yesno = dem_pct_20 > dem_pct_16) |>
+ head()
 ```
 
 
@@ -491,10 +491,10 @@ Creates a sheet of Delaware republican counties that won in 2020, alongside the 
 :::
 
 ```{r}
-# elections_small |>
-#   filter(state_name == "Delaware") |>
-#   mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |>
-#   select(county_name, repub_pct_20, dem_pct_20, repub_win_20)
+elections_small |>
+  filter(state_name == "Delaware") |>
+  mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |>
+  select(county_name, repub_pct_20, dem_pct_20, repub_win_20)
 ```
 
 #### Part e {-}
@@ -509,11 +509,11 @@ BEFORE trying, what do you think will happen if you change the order of mutate a
 :::
 
 ```{r}
-# Now try it. Change the order of mutate and select below.
-elections_small |>
-  filter(state_name == "Delaware") |>
-  select(county_name, repub_pct_20, dem_pct_20, repub_win_20)
-  mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |>
+# # Now try it. Change the order of mutate and select below.
+# elections_small |>
+#   filter(state_name == "Delaware") |>
+#   select(county_name, repub_pct_20, dem_pct_20, repub_win_20) |>
+#   mutate(repub_win_20 = repub_pct_20 > dem_pct_20) 
 
 ```
 
@@ -879,7 +879,7 @@ elections_small |>
 ```{r}
 # Define repub_win_20, whether the Repub won in 2020 (TRUE or FALSE!)
 elections_small |> 
-  mutate(repub_win_20 = repub_pct_20 > dem_pct_20) 
+  mutate(repub_win_20 = repub_pct_20 > dem_pct_20) |> 
   head()
 ```
 
