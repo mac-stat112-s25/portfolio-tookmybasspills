@@ -30,6 +30,8 @@ book:
       - bw/bw-tri.qmd
       - bw/bw-quad.qmd
       - bw/bw-spatial.qmd
+      - bw/bw-exam.qmd
+      - bw/bw-summary.qmd
 
     - part: "In-class Activities"
       chapters: 
