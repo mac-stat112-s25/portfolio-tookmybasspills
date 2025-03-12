@@ -260,7 +260,10 @@ Use our more familiar wrangling tools to warm up.
 ```{r}
 # Construct a table that indicates the number of classes offered in each day/time slot
 # Print only the 6 most popular time slots
-
+courses |> 
+  count(days, time) |> 
+  arrange(desc(n)) |> 
+  head()
 
 
 ```
@@ -279,6 +282,12 @@ So that we can analyze it later, we want to wrangle the `courses` data:
 Store this as `courses_clean` so that you can use it later.
 
 ```{r}
+courses_clean <- courses |> 
+  separate(avail_max, c("avail", "max"), sep = " / ") |> 
+  mutate(enroll = as.numeric(max) - as.numeric(avail)) |> 
+  separate(number, c("dept", "number", "section"))
+  
+head(courses_clean)
 ```
 
 
@@ -289,10 +298,18 @@ Using `courses_clean`...
 
 ```{r}
 # Identify the 6 departments that offered the most sections
-
+courses_clean |> 
+  count(dept) |> 
+  arrange(desc(n)) |> 
+  head()
 
 # Identify the 6 departments with the longest average course titles
-
+courses_clean |> 
+  mutate(length = str_length(name)) |> 
+  group_by(dept) |> 
+  summarize(avg_length = mean(length)) |> 
+  arrange(desc(avg_length)) |> 
+  head()
 ```
 
 
@@ -304,6 +321,8 @@ Using `courses_clean`...
 Get a subset of `courses_clean` that only includes courses taught by Alicia Johnson.
 
 ```{r}
+courses_clean |>
+  filter(instructor == "Alicia Johnson")
 ```
 
 #### Part b {.unnumbered}
@@ -322,6 +341,14 @@ Create a new dataset from `courses_clean`, named `stat`, that only includes STAT
 -   The result should have 18 rows and 4 columns.
 
 ```{r}
+stat <- courses_clean |> 
+  filter(dept == "STAT") |> 
+  mutate(name = str_replace(name, "Introduction to ", "")) |>
+  mutate(name = str_replace(name, "Statistical", "Stat")) |> 
+  mutate(start_time = str_sub(time, 1, 5)) |> 
+  select(number, name, start_time, enroll)
+
+stat
 ```
 
 
@@ -339,6 +366,13 @@ In the next exercises, we'll dig into enrollments. Let's get the data ready for 
 Save the results as `enrollments` (don't overwrite `courses_clean`).
 
 ```{r}
+enrollments <- courses_clean |> 
+  filter(dept != "PE", dept != "INTD") |> 
+  filter(!(dept == "MUSI" & as.numeric(number) < 100)) |> 
+  filter(!(dept == "THDA" & as.numeric(number) < 100)) |> 
+  filter(!str_detect(section, "L"))
+  
+head(enrollments)
 ```
 
 
@@ -347,6 +381,13 @@ Save the results as `enrollments` (don't overwrite `courses_clean`).
 
 Explore enrollments by department. *You* decide what research questions to focus on. Use both visual and numerical summaries.
 
+```{r}
+lala <- courses_clean |>
+  filter(dept == "MUSI") |>
+  group_by(instructor) |>
+  summarize(totalstudents = sum(enroll)) |>
+  arrange(desc(totalstudents)) |>
+```
 
 
 ### Exercise 7: Enrollment & faculty {.unnumbered}
@@ -360,20 +401,20 @@ To comment/uncomment several lines of code at once, highlight them then click <k
 :::
 
 ```{r}
-# enrollments |>
-#   filter(dept %in% c("STAT", "COMP"), number == 112, section == "01")
+enrollments |>
+  filter(dept %in% c("STAT", "COMP"), number == 112, section == "01")
 ```
 
 Notice that these are the exact same section! In order to not double count an instructor's enrollments, we can keep only the courses that have `distinct()` *combinations* of `days, time, instructor` values.  Uncomment the code lines in the chunk below.
 
 ```{r}
-# enrollments_2 <- enrollments |> 
-#   distinct(days, time, instructor, .keep_all = TRUE)
+ enrollments_2 <- enrollments |>
+   distinct(days, time, instructor, .keep_all = TRUE)
 
 # NOTE: By default this keeps the first department alphabetically
 # That's fine because we won't use this to analyze department enrollments!
-# enrollments_2 |> 
-#   filter(instructor == "Brianna Heggeseth", name == "Introduction to Data Science")
+ enrollments_2 |>
+   filter(instructor == "Brianna Heggeseth", name == "Introduction to Data Science")
 ```
 
 *Now*, explore enrollments by instructor. *You* decide what research questions to focus on. Use both visual and numerical summaries.
@@ -381,6 +422,12 @@ Notice that these are the exact same section! In order to not double count an in
 CAVEAT: The above code doesn't deal with *co-taught* courses that have more than one instructor. Thus instructors that co-taught are recorded as a pair, and their co-taught enrollments aren't added to their total enrollments. This is tough to get around with how the data were scraped as the instructor names are smushed together, not separated by a comma!
 
 ```{r}
+enrollments |>
+  filter(instructor == "Xin Yang") |>
+  distinct(days, time, instructor, .keep_all = TRUE) |>
+  ggplot(aes(x = time, y = enroll)) +
+  geom_point()
+
 ```
 
 
