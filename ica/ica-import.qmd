@@ -319,23 +319,26 @@ After importing new data into RStudio, you MUST do some quick checks of the data
 #### Part a {.unnumbered}
 
 Open `imdb_messy` in the spreadsheet-like viewer by typing `View(imdb_messy)` in the console. Sort this "spreadsheet" by different variables by clicking on the arrows next to the variable names. Do you notice anything unexpected?
+*whats with the color variable*
 
 #### Part b {.unnumbered}
 
 Do a quick `summary()` of each variable in the dataset. *One* way to do this is below:
 
 ```{r}
-# imdb_messy |>
-#   mutate(across(where(is.character), as.factor)) |>  # convert characters to factors in order to summarize
-#   summary()
+imdb_messy |>
+  mutate(across(where(is.character), as.factor)) |>  # convert characters to factors in order to summarize
+  summary()
 ```
 
 Follow-up:
 
 -   What type of info is provided on quantitative variables?
+*min, max, 1st and 3rd quartile, median and mean*
 -   What type of info is provided on categorical variables?
+*count*
 -   What stands out to you in these summaries? Is there anything you'd need to clean before using this data?
-
+*many NAs and that is not good no no! i would want to clean that*
 
 
 ### Exercise 4: Clean Data: Factor Variables 1 {.unnumbered}
@@ -343,11 +346,9 @@ Follow-up:
 If you didn't already in Exercise 3, check out the `color` variable in the `imdb_messy` dataset.
 
 -   What's goofy about this / what do we need to fix?
+*wether a movie is shot in black and white or color*
 -   More specifically, what different categories does the `color` variable take, and how many movies fall into each of these categories?
-
-```{r}
-```
-
+*Black and White, B&W, color, and Color*
 
 
 ### Exercise 5: Clean Data: Factor Variables 2 {.unnumbered}
@@ -358,6 +359,8 @@ When working with categorical variables like `color`, the categories must be "cl
 
 We *could* open the .csv file in, say, Excel or Google sheets, clean up the `color` variable, save a clean copy, and then reimport that into RStudio. BUT that would be the wrong thing to do. Why is it important to use R code, which we then save inside this qmd, to clean our data?
 
+*so we save it in an altered copy, and its an easier thing to do*
+
 #### Part b {.unnumbered}
 
 Let's use R code to change the `color` variable so that it appropriately combines the various categories into only 2: `Color` and `Black_White`. We've learned a couple sets of string-related tools that could be handy here. First, starting with the `imdb_messy` data, change the `color` variable using one of the functions we learned in the **Factors** lesson.
@@ -367,6 +370,15 @@ Let's use R code to change the `color` variable so that it appropriately combine
 Store your results in `imdb_temp` (don't overwrite `imdb_messy`). To check your work, print out a `count()` table of the `color` variable in `imdb_temp`.
 
 ```{r}
+imdb_temp <- imdb_messy |> 
+  mutate(color = fct_recode(color,
+                            "Color" = "COLOR",
+                            "Color" = "color",
+                            "Black_White" = "B&W",
+                            "Black_White" = "Black and White"))
+
+imdb_temp |> 
+  count(color)  
 ```
 
 #### Part c {.unnumbered}
@@ -376,6 +388,14 @@ Repeat Part b using one of our string functions from the **String** lesson:
 `str_replace()`, `str_replace_all()`, `str_to_lower()`, `str_sub()`, `str_length()`, `str_detect()`
 
 ```{r}
+imdb_temp <- imdb_messy |> 
+  mutate(color = str_replace(color, "COLOR", "Color"),
+         color = str_replace(color, "color", "Color"),
+         color = str_replace(color, "B&W", "Black_White"),
+         color = str_replace(color, "Black and White", "Black_White"))
+
+imdb_temp |> 
+  count(color)
 ```
 
 
@@ -395,13 +415,13 @@ As a first step, let's simply understand the *volume* of NAs. Specifically:
 
 ```{r}
 # Count the total number of rows in imdb_messy
-#___(imdb_messy)
+nrow(imdb_messy)
 
 # Then count the number of NAs in each column
-#colSums(is.na(imdb_messy))
+colSums(is.na(imdb_messy))
 
 # Then count the number of NAs in a specific column
-#imdb_messy |> 
+#imdb_messy |>
 #  ___(___(is.na(actor_1_facebook_likes)))
 ```
 
@@ -414,6 +434,8 @@ As a second step, let's think about *why* some values are missing. Study the ind
 Consider a more specific example. Obtain a dataset of movies that are missing data on `actor_1_facebook_likes`. Then explain why you think there are NAs. HINT: `is.na(___)`
 
 ```{r}
+imdb_messy |> 
+  filter(is.na(actor_1_facebook_likes))
 ```
 
 
@@ -431,18 +453,23 @@ Next, let's think about what to *do* about the missing values. There is no perfe
 Calculate the average duration of a film. THINK: How can we deal with the NA's?
 
 ```{r}
+imdb_messy |>
+  summarize(mean(duration, na.rm = TRUE))
 ```
 
 Follow-up:
 
 How are the NAs dealt with here? Did we have to create and save a new dataset in order to do this analysis?
+*get rid of NA*
 
 #### Part b {.unnumbered}
 
 Try out the `drop_na()` function:
 
 ```{r}
-# imdb_temp <- drop_na(imdb_messy)
+imdb_temp <- drop_na(imdb_messy)
+nrow(imdb_temp)
+colSums(is.na(imdb_temp))
 ```
 
 Follow-up questions:
@@ -456,8 +483,8 @@ Follow-up questions:
 `drop_na()` removes data points that have *any* NA values, even if we don't care about the variable(s) for which data is missing. This can result in losing a lot of data points that *do* have data on the variables we actually care about! For example, suppose we only want to explore the relationship between film `duration` and whether it's in `color`. Check out a plot:
 
 ```{r}
-# ggplot(imdb_messy, aes(x = duration, fill = color)) + 
-#   geom_density()
+ggplot(imdb_messy, aes(x = duration, fill = color)) +
+  geom_density()
 ```
 
 Follow-up:
@@ -465,8 +492,15 @@ Follow-up:
 -   Create a new dataset with *only* and *all* movies that have complete info on `duration` and `color`. HINT: You could use `!is.na(___)` or `drop_na()` (differently than above)
 -   Use this new dataset to create a new and improved plot.
 -   How many movies remain in your new dataset? Hence why this is better than using the dataset from part b?
+*not much changes, not getting rid of unneccesary values like drop.na on everything*
 
 ```{r}
+imdb_temp <- imdb_messy |>
+  filter(!is.na(duration), !is.na(color)) 
+dim(imdb_temp) 
+ggplot(imdb_temp, aes(x = duration, fill = color)) +
+  geom_density()
+  
 ```
 
 #### Part d {.unnumbered}
@@ -474,6 +508,12 @@ Follow-up:
 In some cases, missing data is more *non*-data than *unknown* data. For example, the films with NAs for `actor_1_facebook_likes` actually have *0* Facebook likes--they don't even have actors! In these cases, we can *replace* the NAs with a 0. Use the `replace_na()` function to create a new dataset (`imdb_temp`) that replaces the NAs in `actor_1_facebook_likes` with 0. You'll have to check out the help file for this function.
 
 ```{r}
+imdb_temp <- imdb_messy |> 
+  mutate(actor_1_facebook_likes =
+         replace_na(actor_1_facebook_likes, 0))
+
+imdb_temp |> 
+  summarize(sum(is.na(actor_1_facebook_likes)))
 ```
 
 
