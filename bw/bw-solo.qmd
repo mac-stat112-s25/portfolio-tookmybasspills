@@ -14,16 +14,29 @@ library(stringr)
 ```{r}
 electric <- read.csv('C:\\Users\\comma\\OneDrive\\Documents\\GitHub\\portfolio-tookmybasspills\\data\\Electric_Vehicle_Population_Data.csv')
 
+electricsum <- electric |>
+  mutate(county = str_to_lower(County)) |>
+  group_by(county) |>
+  summarize(numcount = n())
+
 ```
 
 ```{r}
+library(mosaic)
 
- # washington <- st_as_sf(
- #  maps::map("county",
- #            region = c("washington"), 
- #            fill = TRUE, plot = FALSE))
- # ggplot(electric, aes(map_id = County, fill
-
+#| fig-cap: "Made by Elina Poll. Source: https://www.kaggle.com/datasets/qnqfbqfqo/electric-vehicle-population-in-washington-state"
+#| fig-alt: "a cloropleth map of electric vehicle ownership by county in washington state. unsurprisingly, King County, where Seattle resides, has a toweringly large electric vehicle population while other counties have less than 100. However, the two counties with the most after King are the two neighboring it, likely explained by the two counties often hosting residents that commute to King county for work."
+ washington <- st_as_sf(
+  maps::map("county",
+            region = c("washington"),
+            fill = TRUE, plot = FALSE)) |>
+  mutate(county = str_replace(ID, "washington,", "")) |>
+  left_join(electricsum) 
+  ggplot(washington, aes(fill = numcount)) +
+    geom_sf() +
+    scale_fill_viridis_c() +
+    theme_map() +
+    labs(fill = "Number of Electric Vehicles (by county)")
 
  
 ```
