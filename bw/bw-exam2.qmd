@@ -1,11 +1,16 @@
 ```{r}
 library(tidytuesdayR)
 library(tidyverse)
+library(rnaturalearth)
+library(sf)
 tuesdata <- tt_load('2020-02-18')
 fc <- tuesdata$food_consumption
+#to the poor person who has to look at this. yes. i know the graphs are bad. believe me. i struggled.
 ```
 
 ```{r}
+#| fig-cap: "Created by Elina, 4/2/25, data: https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-02-18/readme.md"
+#| fig-alt: "A bar graph of the 5 countries with the highest general food consumption. Finland leads the pack, with Albania, Lithuania, the Netherlands, and Sweden clustering behind."
 fc |>
   mutate(food_category = fct_recode(food_category, "Lamb" = "Lamb & Goat", "Dairy" = "Milk - inc. cheese", "Wheat" = "Wheat and Wheat Products", "Nuts" = "Nuts inc. Peanut Butter")) |>
   group_by(country) |>
@@ -23,6 +28,8 @@ fc |>
 ```
 
 ```{r}
+#| fig-cap: "Created by Elina, 4/2/25, data: https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-02-18/readme.md"
+#| fig-alt: "A boxplot of the 5 countries with the highest general food consumption. Finland leads the pack, with Albania, Lithuania, the Netherlands, and Sweden clustering behind."
 fc |>
   mutate(food_category = fct_recode(food_category, "Lamb" = "Lamb & Goat", "Dairy" = "Milk - inc. cheese", "Wheat" = "Wheat and Wheat Products", "Nuts" = "Nuts inc. Peanut Butter")) |>
   group_by(country) |>
@@ -40,11 +47,46 @@ fc |>
 
 
 ```{r}
+#| fig-cap: "Created by Elina, 4/2/25, data: https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-02-18/readme.md"
+#| fig-alt: "A poorly made scatterplot of each country's food consumption, faceted by food type."
 fc |>
   mutate(food_category = fct_recode(food_category, "Lamb" = "Lamb & Goat", "Dairy" = "Milk - inc. cheese", "Wheat" = "Wheat and Wheat Products", "Nuts" = "Nuts inc. Peanut Butter")) |>
   group_by(food_category) |>
-  slice_max(consumption)
+  slice_max(consumption, n = 5) |>
+  select(-co2_emmission) |>
+  ggplot(aes(x = country, y = consumption, color = country)) +
+  geom_point() +
+  facet_wrap(~food_category) 
+
   
-  
+```
+
+```{r}
+#| fig-cap: "Created by Elina, 4/2/25, data: https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-02-18/readme.md"
+#| fig-alt: "A map of each country's food consumption, faceted by food type."
+ne_countries(returnclass = "sf") |>
+  select(name, geometry) |>
+  mutate(name = ifelse(name == "United States of America", "USA", name)) |>
+  mutate(name = ifelse(name == "Bosnia and Herz", "Bosnia and Herzgovina", name)) |>
+  mutate(name = ifelse(name == "Czechia", "Czech Republic", name)) |>
+  mutate(name = ifelse(name == "Taiwan", "Taiwan. ROC", name)) |>
+  left_join(
+    fc |>
+      select(-co2_emmission) |>
+      group_by(food_category) |>
+      mutate(consumption = (consumption - mean(consumption))/sd(consumption)),
+    join_by(name == country)) |>
+  pivot_wider(names_from = food_category, values_from = consumption) |>
+  select(-"NA") |>
+  pivot_longer(cols = c(-name, -geometry),
+               names_to = "food_category",
+               values_to = "consumption") |>
+  ggplot() +
+  geom_sf(aes(fill = consumption)) +
+  facet_wrap(~food_category) +
+  theme(legend.position = "bottom") +
+  scale_fill_viridis_c() +
+  labs(fill = "Level of consumption")
+    
 ```
 

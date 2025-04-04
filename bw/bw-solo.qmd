@@ -1,0 +1,29 @@
+
+---
+title: "solo"
+---
+
+```{r}
+library(sf)
+library(ggplot2)
+library(maps)
+library(tidyverse)
+library(stringr)
+```
+
+```{r}
+electric <- read.csv('C:\\Users\\comma\\OneDrive\\Documents\\GitHub\\portfolio-tookmybasspills\\data\\Electric_Vehicle_Population_Data.csv')
+
+```
+
+```{r}
+
+ # washington <- st_as_sf(
+ #  maps::map("county",
+ #            region = c("washington"), 
+ #            fill = TRUE, plot = FALSE))
+ # ggplot(electric, aes(map_id = County, fill
+
+
+ 
+```
